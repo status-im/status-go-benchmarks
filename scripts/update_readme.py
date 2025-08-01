@@ -135,8 +135,8 @@ def create_history_plots(historical_data, output_dir="docs"):
     metrics_config = [
         ("CPU Median", ["metrics", "cpu", "median"], "%"),
         ("CPU Max", ["metrics", "cpu", "max"], "%"),
-        ("RAM Median", ["metrics", "ram", "median"], "MB"),
-        ("RAM Max", ["metrics", "ram", "max"], "MB"),
+        ("RAM Median", ["metrics", "expvar", "total_memory_mb", "median"], "MB"),
+        ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], "MB"),
         ("RX Total", ["metrics", "network", "rx", "total_bytes"], "Bytes"),
         ("TX Total", ["metrics", "network", "tx", "total_bytes"], "Bytes"),
     ]
@@ -292,8 +292,8 @@ def create_metrics_table(current_dir, current_data, previous_data):
     metrics = [
         ("CPU Median", ["metrics", "cpu", "median"], lambda x: f"{x:.2f}%"),
         ("CPU Max", ["metrics", "cpu", "max"], lambda x: f"{x:.2f}%"),
-        ("RAM Median", ["metrics", "ram", "median"], format_memory),
-        ("RAM Max", ["metrics", "ram", "max"], format_memory),
+        ("RAM Median", ["metrics", "expvar", "total_memory_mb", "median"], format_memory),
+        ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], format_memory),
         ("RX Total", ["metrics", "network", "rx", "total_bytes"], format_bytes),
         ("TX Total", ["metrics", "network", "tx", "total_bytes"], format_bytes),
     ]

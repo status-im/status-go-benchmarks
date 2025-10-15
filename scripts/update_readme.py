@@ -15,6 +15,7 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+HISTORY_DAYS_SIZE = 60
 
 def parse_directory_name(dir_name):
     """Parse directory name to extract timestamp and commit hash."""
@@ -120,12 +121,13 @@ def load_historical_data(benchmarks_dir, days=365):
 
 
 def create_history_plots(historical_data, output_dir="docs"):
-    """Create 30-day history plots for each metric."""
+    """Create history plots for each metric."""
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
     # Test names and their display names
     test_configs = [
+        ("test_idle[waku_light_client_False]", "Idle (Full Client)", "magenta"),
         ("test_idle[waku_light_client_True]", "Idle (Light Client)", "blue"),
         ("test_one_to_one_messages[waku_light_client_True]", "One-to-One (Light Client)", "green"), 
         ("test_one_to_one_messages[waku_light_client_False]", "One-to-One (Full Node)", "red")
@@ -139,6 +141,8 @@ def create_history_plots(historical_data, output_dir="docs"):
         ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], "MB"),
         ("RX Total", ["metrics", "network", "rx", "total_bytes"], "Bytes"),
         ("TX Total", ["metrics", "network", "tx", "total_bytes"], "Bytes"),
+        ("Goroutines count", ["metrics", "expvar", "num_goroutines_max"], ""),
+        ("Threads count", ["metrics", "expvar", "num_threads_max"], ""),
     ]
     
     # Create plots
@@ -159,12 +163,8 @@ def create_history_plots(historical_data, output_dir="docs"):
                     dates.append(entry['date'])
                     # Convert bytes to KB/MB for better readability
                     if unit == "Bytes":
-                        if value < 1024 * 1024:
-                            value = value / 1024  # Convert to KB
-                            unit_display = "KB"
-                        else:
-                            value = value / (1024 * 1024)  # Convert to MB
-                            unit_display = "MB"
+                        value = value / (1024 * 1024)  # Convert to MB
+                        unit_display = "MB"
                     values.append(value)
             
             if dates and values:
@@ -172,7 +172,7 @@ def create_history_plots(historical_data, output_dir="docs"):
                 plt.plot(dates, values, marker='o', label=display_name, color=color, linewidth=2, markersize=4)
         
         # Format the plot
-        plt.title(f"{metric_name} - 30 Day History", fontsize=14, fontweight='bold')
+        plt.title(f"{metric_name} - {HISTORY_DAYS_SIZE} Day History", fontsize=14, fontweight='bold')
         plt.xlabel("Date", fontsize=12)
         
         # Set y-label with appropriate unit
@@ -187,20 +187,20 @@ def create_history_plots(historical_data, output_dir="docs"):
         if has_data:
             plt.legend(loc='best')
         else:
-            plt.text(0.5, 0.5, 'No data available for the last 30 days', 
+            plt.text(0.5, 0.5, f'No data available for the last {HISTORY_DAYS_SIZE} days',
                     ha='center', va='center', transform=plt.gca().transAxes, 
                     fontsize=12, alpha=0.7)
         
-        # Set x-axis to show 30 days from the most recent data point
+        # Set x-axis to show N days from the most recent data point
         if historical_data:
             # Find the most recent date in the data
             most_recent_date = max(entry['date'] for entry in historical_data)
             end_date = most_recent_date + timedelta(days=1)  # Add a small buffer
-            start_date = most_recent_date - timedelta(days=30)
+            start_date = most_recent_date - timedelta(days=HISTORY_DAYS_SIZE)
         else:
             # Fallback to current date if no data
             end_date = datetime.now()
-            start_date = end_date - timedelta(days=30)
+            start_date = end_date - timedelta(days=HISTORY_DAYS_SIZE)
         plt.xlim(start_date, end_date)
         
         # Format x-axis dates with more frequent marks
@@ -230,11 +230,12 @@ def create_history_plots(historical_data, output_dir="docs"):
 def create_history_plots_table(plots_dir):
     """Create a markdown table displaying the history plots."""
     
-    # Organize plots into a 2x3 grid
+    # Organize plots into a 2x4 grid
     plot_files = [
         ("cpu_median_history.png", "cpu_max_history.png"),
         ("ram_median_history.png", "ram_max_history.png"),
-        ("rx_total_history.png", "tx_total_history.png")
+        ("rx_total_history.png", "tx_total_history.png"),
+        ("goroutines_count_history.png", "threads_count_history.png"),
     ]
     
     table_rows = []
@@ -283,6 +284,7 @@ def create_metrics_table(current_dir, current_data, previous_data):
     """Create the main metrics table."""
     # Test names in order
     test_names = [
+        "test_idle[waku_light_client_False]",
         "test_idle[waku_light_client_True]",
         "test_one_to_one_messages[waku_light_client_True]", 
         "test_one_to_one_messages[waku_light_client_False]"
@@ -296,6 +298,8 @@ def create_metrics_table(current_dir, current_data, previous_data):
         ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], format_memory),
         ("RX Total", ["metrics", "network", "rx", "total_bytes"], format_bytes),
         ("TX Total", ["metrics", "network", "tx", "total_bytes"], format_bytes),
+        ("Goroutines count", ["metrics", "expvar", "num_goroutines_max"], lambda x: f"{x}"),
+        ("Threads count", ["metrics", "expvar", "num_threads_max"], lambda x: f"{x}"),
     ]
     
     # Build table data
@@ -358,12 +362,12 @@ def generate_readme_content(current_dir, previous_dir, current_data, previous_da
     content = [
         "# status-go-benchmarks",
         "",
-        "Benchmark metrics with 30-day history and latest comparison.",
+        f"Benchmark metrics with {HISTORY_DAYS_SIZE}-day history and latest comparison.",
         ""
     ]
     
-    # Add 30-day history section first
-    content.append("## 30-Day History")
+    # Add history section first
+    content.append(f"## {HISTORY_DAYS_SIZE}-Day History")
     content.append("")
     history_table = create_history_plots_table(plots_dir)
     content.append(history_table)
@@ -422,11 +426,11 @@ def main():
         previous_data = load_benchmark_data(previous_dir)
     
     # Load historical data and create plots
-    print("Loading historical data for 30-day trends...")
+    print("Loading historical data...")
     historical_data = load_historical_data(benchmarks_dir)
     print(f"Found {len(historical_data)} historical benchmark runs")
     
-    print("Creating 30-day history plots...")
+    print("Creating history plots...")
     plots_dir = create_history_plots(historical_data)
     
     # Generate README content

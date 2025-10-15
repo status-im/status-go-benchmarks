@@ -163,12 +163,8 @@ def create_history_plots(historical_data, output_dir="docs"):
                     dates.append(entry['date'])
                     # Convert bytes to KB/MB for better readability
                     if unit == "Bytes":
-                        if value < 1024 * 1024:
-                            value = value / 1024  # Convert to KB
-                            unit_display = "KB"
-                        else:
-                            value = value / (1024 * 1024)  # Convert to MB
-                            unit_display = "MB"
+                        value = value / (1024 * 1024)  # Convert to MB
+                        unit_display = "MB"
                     values.append(value)
             
             if dates and values:

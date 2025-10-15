@@ -127,6 +127,7 @@ def create_history_plots(historical_data, output_dir="docs"):
     
     # Test names and their display names
     test_configs = [
+        ("test_idle[waku_light_client_False]", "Idle (Full Client)", "magenta"),
         ("test_idle[waku_light_client_True]", "Idle (Light Client)", "blue"),
         ("test_one_to_one_messages[waku_light_client_True]", "One-to-One (Light Client)", "green"), 
         ("test_one_to_one_messages[waku_light_client_False]", "One-to-One (Full Node)", "red")
@@ -284,6 +285,7 @@ def create_metrics_table(current_dir, current_data, previous_data):
     """Create the main metrics table."""
     # Test names in order
     test_names = [
+        "test_idle[waku_light_client_False]",
         "test_idle[waku_light_client_True]",
         "test_one_to_one_messages[waku_light_client_True]", 
         "test_one_to_one_messages[waku_light_client_False]"

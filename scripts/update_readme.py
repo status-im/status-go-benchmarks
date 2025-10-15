@@ -141,6 +141,8 @@ def create_history_plots(historical_data, output_dir="docs"):
         ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], "MB"),
         ("RX Total", ["metrics", "network", "rx", "total_bytes"], "Bytes"),
         ("TX Total", ["metrics", "network", "tx", "total_bytes"], "Bytes"),
+        ("Goroutines count", ["metrics", "expvar", "num_goroutines_max"], ""),
+        ("Threads count", ["metrics", "expvar", "num_threads_max"], ""),
     ]
     
     # Create plots
@@ -232,11 +234,12 @@ def create_history_plots(historical_data, output_dir="docs"):
 def create_history_plots_table(plots_dir):
     """Create a markdown table displaying the history plots."""
     
-    # Organize plots into a 2x3 grid
+    # Organize plots into a 2x4 grid
     plot_files = [
         ("cpu_median_history.png", "cpu_max_history.png"),
         ("ram_median_history.png", "ram_max_history.png"),
-        ("rx_total_history.png", "tx_total_history.png")
+        ("rx_total_history.png", "tx_total_history.png"),
+        ("goroutines_count_history.png", "threads_count_history.png"),
     ]
     
     table_rows = []
@@ -299,6 +302,8 @@ def create_metrics_table(current_dir, current_data, previous_data):
         ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], format_memory),
         ("RX Total", ["metrics", "network", "rx", "total_bytes"], format_bytes),
         ("TX Total", ["metrics", "network", "tx", "total_bytes"], format_bytes),
+        ("Goroutines count", ["metrics", "expvar", "num_goroutines_max"], lambda x: f"{x}"),
+        ("Threads count", ["metrics", "expvar", "num_threads_max"], lambda x: f"{x}"),
     ]
     
     # Build table data

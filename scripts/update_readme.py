@@ -15,6 +15,7 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+HISTORY_DAYS_SIZE = 60
 
 def parse_directory_name(dir_name):
     """Parse directory name to extract timestamp and commit hash."""
@@ -120,7 +121,7 @@ def load_historical_data(benchmarks_dir, days=365):
 
 
 def create_history_plots(historical_data, output_dir="docs"):
-    """Create 30-day history plots for each metric."""
+    """Create history plots for each metric."""
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
@@ -172,7 +173,7 @@ def create_history_plots(historical_data, output_dir="docs"):
                 plt.plot(dates, values, marker='o', label=display_name, color=color, linewidth=2, markersize=4)
         
         # Format the plot
-        plt.title(f"{metric_name} - 30 Day History", fontsize=14, fontweight='bold')
+        plt.title(f"{metric_name} - {HISTORY_DAYS_SIZE} Day History", fontsize=14, fontweight='bold')
         plt.xlabel("Date", fontsize=12)
         
         # Set y-label with appropriate unit
@@ -187,20 +188,20 @@ def create_history_plots(historical_data, output_dir="docs"):
         if has_data:
             plt.legend(loc='best')
         else:
-            plt.text(0.5, 0.5, 'No data available for the last 30 days', 
+            plt.text(0.5, 0.5, f'No data available for the last {HISTORY_DAYS_SIZE} days',
                     ha='center', va='center', transform=plt.gca().transAxes, 
                     fontsize=12, alpha=0.7)
         
-        # Set x-axis to show 30 days from the most recent data point
+        # Set x-axis to show N days from the most recent data point
         if historical_data:
             # Find the most recent date in the data
             most_recent_date = max(entry['date'] for entry in historical_data)
             end_date = most_recent_date + timedelta(days=1)  # Add a small buffer
-            start_date = most_recent_date - timedelta(days=30)
+            start_date = most_recent_date - timedelta(days=HISTORY_DAYS_SIZE)
         else:
             # Fallback to current date if no data
             end_date = datetime.now()
-            start_date = end_date - timedelta(days=30)
+            start_date = end_date - timedelta(days=HISTORY_DAYS_SIZE)
         plt.xlim(start_date, end_date)
         
         # Format x-axis dates with more frequent marks
@@ -358,12 +359,12 @@ def generate_readme_content(current_dir, previous_dir, current_data, previous_da
     content = [
         "# status-go-benchmarks",
         "",
-        "Benchmark metrics with 30-day history and latest comparison.",
+        f"Benchmark metrics with {HISTORY_DAYS_SIZE}-day history and latest comparison.",
         ""
     ]
     
-    # Add 30-day history section first
-    content.append("## 30-Day History")
+    # Add history section first
+    content.append(f"## {HISTORY_DAYS_SIZE}-Day History")
     content.append("")
     history_table = create_history_plots_table(plots_dir)
     content.append(history_table)
@@ -422,11 +423,11 @@ def main():
         previous_data = load_benchmark_data(previous_dir)
     
     # Load historical data and create plots
-    print("Loading historical data for 30-day trends...")
+    print("Loading historical data...")
     historical_data = load_historical_data(benchmarks_dir)
     print(f"Found {len(historical_data)} historical benchmark runs")
     
-    print("Creating 30-day history plots...")
+    print("Creating history plots...")
     plots_dir = create_history_plots(historical_data)
     
     # Generate README content

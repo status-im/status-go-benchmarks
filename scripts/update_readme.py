@@ -202,6 +202,7 @@ def create_history_plots(historical_data, output_dir="docs"):
             end_date = datetime.now()
             start_date = end_date - timedelta(days=HISTORY_DAYS_SIZE)
         plt.xlim(start_date, end_date)
+        plt.ylim(ymin=0)
         
         # Format x-axis dates with more frequent marks
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))

@@ -1,0 +1,53 @@
+{
+  "timestamp": 1770519554.8248465,
+  "version": "unknown",
+  "events": {
+    "Sleep for 5 seconds": 1770519463.640838,
+    "CreateAccountAndLogin": 1770519468.653994,
+    "Logged in": 1770519473.8613932,
+    "Sleep for 60 seconds": 1770519474.430069,
+    "FreeOSMemory": 1770519534.4350057
+  },
+  "metrics": {
+    "cpu": {
+      "median": 48.223587439894956,
+      "max": 200.3978783151326
+    },
+    "ram": {
+      "median": 182.396484375,
+      "max": 203.12109375
+    },
+    "network": {
+      "rx": {
+        "bytes_per_sec": {
+          "median": 5524.879226975565,
+          "max": 746172.0339997606
+        },
+        "total_bytes": 21963677,
+        "total_packets": 76140
+      },
+      "tx": {
+        "bytes_per_sec": {
+          "median": 9341.451456668616,
+          "max": 385080.2107027416
+        },
+        "total_bytes": 11722644,
+        "total_packets": 75911
+      },
+      "total_errors": 0
+    },
+    "expvar": {
+      "idle_memory_mb": {
+        "median": 11.8828125,
+        "max": 32.6640625
+      },
+      "total_memory_mb": {
+        "median": 79.9143295288086,
+        "max": 97.8752670288086
+      },
+      "gc_count": 60,
+      "num_goroutines_max": 287,
+      "num_threads_max": 40
+    }
+  }
+}

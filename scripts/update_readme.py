@@ -35,19 +35,31 @@ def parse_directory_name(dir_name):
         return None, None
 
 
+def normalize_test_name(test_name):
+    """Normalize the light-client parameter id so renamed variants map to one key.
+
+    The pytest parameter id was renamed from `waku_light_client` to
+    `wakuV2LightClient` on 2026-06-06, which broke matching against the hardcoded
+    test names below (charts and tables silently went empty). Map any variant back
+    to the canonical `waku_light_client` form so historical and new runs share the
+    same series.
+    """
+    return test_name.replace("wakuV2LightClient", "waku_light_client")
+
+
 def load_benchmark_data(benchmark_dir):
     """Load benchmark data from JSON files in a directory."""
     data = {}
     json_files = glob.glob(os.path.join(benchmark_dir, "*.json"))
-    
+
     for json_file in json_files:
         filename = os.path.basename(json_file)
         # Extract test name from filename
         test_name = filename.split('-')[0]  # e.g., "test_idle[waku_light_client_True]"
-        
+
         with open(json_file, 'r') as f:
-            data[test_name] = json.load(f)
-    
+            data[normalize_test_name(test_name)] = json.load(f)
+
     return data
 
 
@@ -335,7 +347,10 @@ def create_metrics_table(current_dir, current_data, previous_data):
         png_files = []
         if os.path.exists(current_dir):
             for filename in os.listdir(current_dir):
-                if filename.startswith(test_name) and filename.endswith('.png'):
+                if not filename.endswith('.png'):
+                    continue
+                file_test_name = normalize_test_name(filename.split('-')[0])
+                if file_test_name == test_name:
                     png_files.append(os.path.join(current_dir, filename))
         
         if png_files:

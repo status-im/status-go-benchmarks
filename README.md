@@ -11,12 +11,12 @@ Benchmark metrics with 60-day history and latest comparison.
 | ![rx_total_history.png](docs/rx_total_history.png)                 | ![tx_total_history.png](docs/tx_total_history.png)           |
 | ![goroutines_count_history.png](docs/goroutines_count_history.png) | ![threads_count_history.png](docs/threads_count_history.png) |
 
-## Latest Report (2026-06-17)
+## Latest Report (2026-06-18)
 
 | Run       | Date       | Time     | Commit      |
 |-----------|------------|----------|-------------|
-| Contender | 2026-06-17 | 03:17:04 | `f8cae1119` |
-| Baseline  | 2026-06-16 | 03:18:18 | `36cb099e7` |
+| Contender | 2026-06-18 | 03:17:25 | `f7c4478cd` |
+| Baseline  | 2026-06-17 | 03:17:04 | `f8cae1119` |
 
 | Metric                | test_idle<br>[waku_light_client_False]   | test_idle<br>[waku_light_client_True]   | test_one_to_one_messages<br>[waku_light_client_True]   | test_one_to_one_messages<br>[waku_light_client_False]   |
 |-----------------------|------------------------------------------|-----------------------------------------|--------------------------------------------------------|---------------------------------------------------------|

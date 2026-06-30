@@ -15,7 +15,7 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-HISTORY_DAYS_SIZE = 60
+HISTORY_DAYS_SIZE = 30
 
 def parse_directory_name(dir_name):
     """Parse directory name to extract timestamp and commit hash."""

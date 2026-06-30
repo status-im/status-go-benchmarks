@@ -157,12 +157,22 @@ def create_history_plots(historical_data, output_dir="docs"):
         ("Threads count", ["metrics", "expvar", "num_threads_max"], ""),
     ]
     
+    # Determine the visible date window once (shared by all plots)
+    if historical_data:
+        most_recent_date = max(entry['date'] for entry in historical_data)
+        window_end = most_recent_date + timedelta(days=1)  # Add a small buffer
+        window_start = most_recent_date - timedelta(days=HISTORY_DAYS_SIZE)
+    else:
+        window_end = datetime.now()
+        window_start = window_end - timedelta(days=HISTORY_DAYS_SIZE)
+
     # Create plots
     for metric_name, metric_path, unit in metrics_config:
         plt.figure(figsize=(12, 6))
         
         unit_display = unit  # Default unit display
         has_data = False  # Track if we have any data to plot
+        max_value = 0  # Track max within the visible window for y-axis scaling
         
         # Plot each test configuration
         for test_name, display_name, color in test_configs:
@@ -170,6 +180,10 @@ def create_history_plots(historical_data, output_dir="docs"):
             values = []
             
             for entry in historical_data:
+                # Only consider data within the visible window so the y-axis
+                # isn't scaled by spikes outside the HISTORY_DAYS_SIZE range
+                if not (window_start <= entry['date'] <= window_end):
+                    continue
                 value = get_metric_value(entry['data'], test_name, metric_path)
                 if value is not None:
                     dates.append(entry['date'])
@@ -181,6 +195,7 @@ def create_history_plots(historical_data, output_dir="docs"):
             
             if dates and values:
                 has_data = True
+                max_value = max(max_value, max(values))
                 plt.plot(dates, values, marker='o', label=display_name, color=color, linewidth=2, markersize=4)
         
         # Format the plot
@@ -203,18 +218,13 @@ def create_history_plots(historical_data, output_dir="docs"):
                     ha='center', va='center', transform=plt.gca().transAxes, 
                     fontsize=12, alpha=0.7)
         
-        # Set x-axis to show N days from the most recent data point
-        if historical_data:
-            # Find the most recent date in the data
-            most_recent_date = max(entry['date'] for entry in historical_data)
-            end_date = most_recent_date + timedelta(days=1)  # Add a small buffer
-            start_date = most_recent_date - timedelta(days=HISTORY_DAYS_SIZE)
+        # Set x-axis to the visible window computed above
+        plt.xlim(window_start, window_end)
+        # Scale y-axis from in-window data only (5% headroom)
+        if max_value > 0:
+            plt.ylim(0, max_value * 1.05)
         else:
-            # Fallback to current date if no data
-            end_date = datetime.now()
-            start_date = end_date - timedelta(days=HISTORY_DAYS_SIZE)
-        plt.xlim(start_date, end_date)
-        plt.ylim(ymin=0)
+            plt.ylim(ymin=0)
         
         # Format x-axis dates with more frequent marks
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))

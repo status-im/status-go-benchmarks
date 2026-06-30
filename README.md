@@ -1,8 +1,8 @@
 # status-go-benchmarks
 
-Benchmark metrics with 60-day history and latest comparison.
+Benchmark metrics with 30-day history and latest comparison.
 
-## 60-Day History
+## 30-Day History
 
 | Metric History                                                     | Metric History                                               |
 |--------------------------------------------------------------------|--------------------------------------------------------------|

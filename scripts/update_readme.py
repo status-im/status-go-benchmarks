@@ -17,6 +17,39 @@ import matplotlib.dates as mdates
 
 HISTORY_DAYS_SIZE = 30
 
+# Delivery latency rows written by status-go's test_delivery_latency. Every value is in ms
+# and lower is better. Runs before the test existed carry no "latency" block at all.
+LATENCY_TEST_CONFIGS = [
+    ("test_delivery_latency[full_to_full]", "full → full", "red"),
+    ("test_delivery_latency[light_to_full]", "light → full", "green"),
+    ("test_delivery_latency[full_to_light]", "full → light", "blue"),
+    ("test_delivery_latency[light_to_light]", "light → light", "magenta"),
+    ("test_delivery_latency[full_to_full_offline]", "full → full, receiver paused at send", "orange"),
+]
+LATENCY_METRICS_CONFIG = [
+    ("Send to receive p50", ["metrics", "latency", "send_to_receive_p50_ms"], "ms"),
+    ("Send to receive max", ["metrics", "latency", "send_to_receive_max_ms"], "ms"),
+    ("Send to delivered p50", ["metrics", "latency", "send_to_delivered_p50_ms"], "ms"),
+    ("First message", ["metrics", "latency", "first_message_ms"], "ms"),
+    ("Unpause to first batch", ["metrics", "latency", "unpause_to_first_batch_ms"], "ms"),
+]
+LATENCY_PLOT_FILES = [
+    ("send_to_receive_p50_history.png", "send_to_receive_max_history.png"),
+    ("send_to_delivered_p50_history.png", "first_message_history.png"),
+    ("unpause_to_first_batch_history.png", None),
+]
+LATENCY_BLOCK_PATH = ["metrics", "latency"]
+
+
+def latency_lost_samples(data, test_name):
+    """True when a latency row lost timed messages, so its survivors would read as an improvement.
+
+    A lost first message does not count: it is never part of the p50/max population.
+    """
+    timeouts = get_metric_value(data, test_name, LATENCY_BLOCK_PATH + ["receive_timeouts"]) or 0
+    first_lost = get_metric_value(data, test_name, LATENCY_BLOCK_PATH + ["first_message_timed_out"]) or False
+    return timeouts > (1 if first_lost else 0)
+
 def parse_directory_name(dir_name):
     """Parse directory name to extract timestamp and commit hash."""
     # Format: 20241208T172603_9207eaf
@@ -132,30 +165,36 @@ def load_historical_data(benchmarks_dir, days=365):
     return historical_data
 
 
-def create_history_plots(historical_data, output_dir="docs"):
-    """Create history plots for each metric."""
+def create_history_plots(historical_data, output_dir="docs", test_configs=None, metrics_config=None):
+    """Create history plots for each metric.
+
+    `test_configs` and `metrics_config` default to the resource benchmarks; pass
+    LATENCY_TEST_CONFIGS / LATENCY_METRICS_CONFIG for the delivery-latency series.
+    """
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
     # Test names and their display names
-    test_configs = [
-        ("test_idle[waku_light_client_False]", "Idle (Full Client)", "magenta"),
-        ("test_idle[waku_light_client_True]", "Idle (Light Client)", "blue"),
-        ("test_one_to_one_messages[waku_light_client_True]", "One-to-One (Light Client)", "green"), 
-        ("test_one_to_one_messages[waku_light_client_False]", "One-to-One (Full Node)", "red")
-    ]
+    if test_configs is None:
+        test_configs = [
+            ("test_idle[waku_light_client_False]", "Idle (Full Client)", "magenta"),
+            ("test_idle[waku_light_client_True]", "Idle (Light Client)", "blue"),
+            ("test_one_to_one_messages[waku_light_client_True]", "One-to-One (Light Client)", "green"),
+            ("test_one_to_one_messages[waku_light_client_False]", "One-to-One (Full Node)", "red")
+        ]
     
     # Metrics configuration
-    metrics_config = [
-        ("CPU Median", ["metrics", "cpu", "median"], "%"),
-        ("CPU Max", ["metrics", "cpu", "max"], "%"),
-        ("RAM Median", ["metrics", "expvar", "total_memory_mb", "median"], "MB"),
-        ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], "MB"),
-        ("RX Total", ["metrics", "network", "rx", "total_bytes"], "Bytes"),
-        ("TX Total", ["metrics", "network", "tx", "total_bytes"], "Bytes"),
-        ("Goroutines count", ["metrics", "expvar", "num_goroutines_max"], ""),
-        ("Threads count", ["metrics", "expvar", "num_threads_max"], ""),
-    ]
+    if metrics_config is None:
+        metrics_config = [
+            ("CPU Median", ["metrics", "cpu", "median"], "%"),
+            ("CPU Max", ["metrics", "cpu", "max"], "%"),
+            ("RAM Median", ["metrics", "expvar", "total_memory_mb", "median"], "MB"),
+            ("RAM Max", ["metrics", "expvar", "total_memory_mb", "max"], "MB"),
+            ("RX Total", ["metrics", "network", "rx", "total_bytes"], "Bytes"),
+            ("TX Total", ["metrics", "network", "tx", "total_bytes"], "Bytes"),
+            ("Goroutines count", ["metrics", "expvar", "num_goroutines_max"], ""),
+            ("Threads count", ["metrics", "expvar", "num_threads_max"], ""),
+        ]
     
     # Determine the visible date window once (shared by all plots)
     if historical_data:
@@ -185,6 +224,10 @@ def create_history_plots(historical_data, output_dir="docs"):
                 if not (window_start <= entry['date'] <= window_end):
                     continue
                 value = get_metric_value(entry['data'], test_name, metric_path)
+                # A latency row that lost timed messages keeps only the fast ones, so its point would
+                # read as an improvement; leave it off the line rather than plot a survivor median.
+                if unit == "ms" and latency_lost_samples(entry['data'], test_name):
+                    value = None
                 if value is not None:
                     dates.append(entry['date'])
                     # Convert bytes to KB/MB for better readability
@@ -209,6 +252,8 @@ def create_history_plots(historical_data, output_dir="docs"):
             plt.ylabel("Memory Usage (MB)", fontsize=12)
         elif "RX" in metric_name or "TX" in metric_name:
             plt.ylabel(f"Network Transfer ({unit_display})", fontsize=12)
+        elif unit == "ms":
+            plt.ylabel("Latency (ms), lower is better", fontsize=12)
         
         # Only add legend if we have data
         if has_data:
@@ -250,25 +295,26 @@ def create_history_plots(historical_data, output_dir="docs"):
     return output_dir
 
 
-def create_history_plots_table(plots_dir):
+def create_history_plots_table(plots_dir, plot_files=None):
     """Create a markdown table displaying the history plots."""
     
     # Organize plots into a 2x4 grid
-    plot_files = [
-        ("cpu_median_history.png", "cpu_max_history.png"),
-        ("ram_median_history.png", "ram_max_history.png"),
-        ("rx_total_history.png", "tx_total_history.png"),
-        ("goroutines_count_history.png", "threads_count_history.png"),
-    ]
+    if plot_files is None:
+        plot_files = [
+            ("cpu_median_history.png", "cpu_max_history.png"),
+            ("ram_median_history.png", "ram_max_history.png"),
+            ("rx_total_history.png", "tx_total_history.png"),
+            ("goroutines_count_history.png", "threads_count_history.png"),
+        ]
     
     table_rows = []
     
     for left_plot, right_plot in plot_files:
         left_path = os.path.join(plots_dir, left_plot)
-        right_path = os.path.join(plots_dir, right_plot)
+        right_path = os.path.join(plots_dir, right_plot) if right_plot else ""
         
         left_img = f"![{left_plot}]({left_path})" if os.path.exists(left_path) else "N/A"
-        right_img = f"![{right_plot}]({right_path})" if os.path.exists(right_path) else "N/A"
+        right_img = f"![{right_plot}]({right_path})" if right_plot and os.path.exists(right_path) else ("" if right_plot is None else "N/A")
         
         table_rows.append([left_img, right_img])
     
@@ -381,6 +427,70 @@ def create_metrics_table(current_dir, current_data, previous_data):
     return tabulate(table_data, headers=headers, tablefmt="github")
 
 
+def format_latency(ms_value):
+    """Format a latency value in milliseconds."""
+    return f"{ms_value:.0f} ms"
+
+
+def latency_fleet(current_data):
+    """The fleet the current run's latency rows were measured on, or None if the run has none."""
+    for test_name, _, _ in LATENCY_TEST_CONFIGS:
+        fleet = get_metric_value(current_data, test_name, ["metrics", "latency", "fleet"])
+        if fleet:
+            return fleet
+    return None
+
+
+def warn_unmatched_latency_ids(current_data):
+    """A renamed row id would silently vanish from the table; say so on stdout instead."""
+    known = {test_name for test_name, _, _ in LATENCY_TEST_CONFIGS}
+    for test_name in current_data:
+        if test_name.startswith("test_delivery_latency[") and test_name not in known:
+            print(f"Warning: latency test id {test_name} is not configured and will not be rendered")
+
+
+def create_latency_table(current_data, previous_data):
+    """Create the delivery-latency table, one column per latency test id.
+
+    A run with no latency block renders N/A; a leaf the row does not write renders as a dash;
+    a null leaf renders blank; a delta is shown only when the baseline has a number too and the
+    row lost no timed messages. The last row carries the counts that say how much of the row
+    survived, so a survivor-only median cannot pass for an improvement.
+    """
+    test_names = [test_name for test_name, _, _ in LATENCY_TEST_CONFIGS]
+
+    table_data = []
+    for metric_name, metric_path, _unit in LATENCY_METRICS_CONFIG:
+        row = [metric_name]
+        for test_name in test_names:
+            latency_block = get_metric_value(current_data, test_name, LATENCY_BLOCK_PATH)
+            current_value = get_metric_value(current_data, test_name, metric_path)
+            previous_value = get_metric_value(previous_data, test_name, metric_path) if previous_data else None
+
+            if not isinstance(latency_block, dict):
+                cell_content = "N/A"
+            elif metric_path[-1] not in latency_block:
+                cell_content = "—"
+            elif current_value is None:
+                cell_content = ""
+            elif previous_value is not None and not latency_lost_samples(current_data, test_name):
+                cell_content = f"{format_latency(current_value)} {calculate_delta(current_value, previous_value)}"
+            else:
+                cell_content = format_latency(current_value)
+            row.append(cell_content)
+        table_data.append(row)
+
+    counts = ["Messages received (receive timeouts)"]
+    for test_name in test_names:
+        received = get_metric_value(current_data, test_name, LATENCY_BLOCK_PATH + ["messages_received"])
+        timeouts = get_metric_value(current_data, test_name, LATENCY_BLOCK_PATH + ["receive_timeouts"])
+        counts.append("N/A" if received is None else f"{received} ({timeouts if timeouts is not None else 0})")
+    table_data.append(counts)
+
+    headers = ["Metric"] + [test_name.replace("[", "<br>[") for test_name in test_names]
+    return tabulate(table_data, headers=headers, tablefmt="github")
+
+
 def generate_readme_content(current_dir, previous_dir, current_data, previous_data, plots_dir):
     """Generate the complete README content."""
     
@@ -412,6 +522,29 @@ def generate_readme_content(current_dir, previous_dir, current_data, previous_da
     # Add metrics table
     metrics_table = create_metrics_table(current_dir, current_data, previous_data)
     content.append(metrics_table)
+    content.append("")
+
+    # Delivery latency: its own section so the resource table stays readable
+    fleet = latency_fleet(current_data)
+    content.append(f"## Delivery latency (lower is better){f' — fleet `{fleet}`' if fleet else ''}")
+    content.append("")
+    content.append(
+        "One-to-one message latency from `test_delivery_latency`, in milliseconds. "
+        "Lower is better. About 1 s of every send-to-receive figure and about 2 s of every send-to-delivered "
+        "figure is a deliberate client-side timer, the receive debounce on each side."
+    )
+    content.append("")
+    content.append("- **Send to receive**: the sender's RPC return to the receiver's `messages.new` signal.")
+    content.append("- **Send to delivered**: the sender's RPC return to its own `message.delivered` ack. It moves with the test's send cadence, so do not compare it across cadences.")
+    content.append("- **Max**: the slowest of the 11 timed messages, not a percentile.")
+    content.append("- **First message**: the first delivered message of the chat, reported on its own.")
+    content.append("- **Offline row**: 12 messages queued while the receiver is paused; the figure is unpause to first batch. It counts all 12; per-message rows do not apply.")
+    content.append("- **Blank**: fewer than five samples. **Dash**: the metric does not apply to the row. **N/A**: the run has no latency data.")
+    content.append("- A row that lost timed messages shows no delta and is left off the history charts.")
+    content.append("")
+    content.append(create_history_plots_table(plots_dir, LATENCY_PLOT_FILES))
+    content.append("")
+    content.append(create_latency_table(current_data, previous_data))
     content.append("")
     
     return "\n".join(content)
@@ -445,6 +578,7 @@ def main():
     
     print(f"Loading current benchmark data from: {current_dir}")
     current_data = load_benchmark_data(current_dir)
+    warn_unmatched_latency_ids(current_data)
     
     previous_data = None
     if previous_dir:
@@ -458,6 +592,7 @@ def main():
     
     print("Creating history plots...")
     plots_dir = create_history_plots(historical_data)
+    create_history_plots(historical_data, plots_dir, LATENCY_TEST_CONFIGS, LATENCY_METRICS_CONFIG)
     
     # Generate README content
     readme_content = generate_readme_content(current_dir, previous_dir, current_data, previous_data, plots_dir)

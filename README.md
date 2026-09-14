@@ -29,3 +29,30 @@ Benchmark metrics with 30-day history and latest comparison.
 | Goroutines count      | 282 (0%)                                                                                                                           | 208 (0%)                                                                                                                         | 587 (0%)                                                                                                                                                       | 634 (-0.3%)                                                                                                                                                      |
 | Threads count         | 28 (+7.7%)                                                                                                                         | 26 (+8.3%)                                                                                                                       | 39 (-7.1%)                                                                                                                                                     | 40 (0%)                                                                                                                                                          |
 | **Performance Chart** | ![test_idle[waku_light_client_False]](benchmarks/20260914T031624_65e177a4f/test_idle[wakuV2LightClient_False]-20260914-030812.png) | ![test_idle[waku_light_client_True]](benchmarks/20260914T031624_65e177a4f/test_idle[wakuV2LightClient_True]-20260914-030945.png) | ![test_one_to_one_messages[waku_light_client_True]](benchmarks/20260914T031624_65e177a4f/test_one_to_one_messages[wakuV2LightClient_True]-20260914-031516.png) | ![test_one_to_one_messages[waku_light_client_False]](benchmarks/20260914T031624_65e177a4f/test_one_to_one_messages[wakuV2LightClient_False]-20260914-031230.png) |
+
+## Delivery latency (lower is better)
+
+One-to-one message latency from `test_delivery_latency`, in milliseconds. Lower is better. About 1 s of every send-to-receive figure and about 2 s of every send-to-delivered figure is a deliberate client-side timer, the receive debounce on each side.
+
+- **Send to receive**: the sender's RPC return to the receiver's `messages.new` signal.
+- **Send to delivered**: the sender's RPC return to its own `message.delivered` ack. It moves with the test's send cadence, so do not compare it across cadences.
+- **Max**: the slowest of the 11 timed messages, not a percentile.
+- **First message**: the first delivered message of the chat, reported on its own.
+- **Offline row**: 12 messages queued while the receiver is paused; the figure is unpause to first batch. It counts all 12; per-message rows do not apply.
+- **Blank**: fewer than five samples. **Dash**: the metric does not apply to the row. **N/A**: the run has no latency data.
+- A row that lost timed messages shows no delta and is left off the history charts.
+
+| Metric History                                                                 | Metric History                                                           |
+|--------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| ![send_to_receive_p50_history.png](docs/send_to_receive_p50_history.png)       | ![send_to_receive_max_history.png](docs/send_to_receive_max_history.png) |
+| ![send_to_delivered_p50_history.png](docs/send_to_delivered_p50_history.png)   | ![first_message_history.png](docs/first_message_history.png)             |
+| ![unpause_to_first_batch_history.png](docs/unpause_to_first_batch_history.png) |                                                                          |
+
+| Metric                               | test_delivery_latency<br>[full_to_full]   | test_delivery_latency<br>[light_to_full]   | test_delivery_latency<br>[full_to_light]   | test_delivery_latency<br>[light_to_light]   | test_delivery_latency<br>[full_to_full_offline]   |
+|--------------------------------------|-------------------------------------------|--------------------------------------------|--------------------------------------------|---------------------------------------------|---------------------------------------------------|
+| Send to receive p50                  | N/A                                       | N/A                                        | N/A                                        | N/A                                         | N/A                                               |
+| Send to receive max                  | N/A                                       | N/A                                        | N/A                                        | N/A                                         | N/A                                               |
+| Send to delivered p50                | N/A                                       | N/A                                        | N/A                                        | N/A                                         | N/A                                               |
+| First message                        | N/A                                       | N/A                                        | N/A                                        | N/A                                         | N/A                                               |
+| Unpause to first batch               | N/A                                       | N/A                                        | N/A                                        | N/A                                         | N/A                                               |
+| Messages received (receive timeouts) | N/A                                       | N/A                                        | N/A                                        | N/A                                         | N/A                                               |

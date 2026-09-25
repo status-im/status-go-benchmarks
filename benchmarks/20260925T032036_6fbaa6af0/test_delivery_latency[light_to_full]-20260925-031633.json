@@ -1,0 +1,99 @@
+{
+  "timestamp": 1790306194.3958282,
+  "version": "unknown",
+  "events": {
+    "CreateAccountAndLogin": 1790306153.3302164,
+    "Logged in": 1790306155.74574,
+    "Contacts made": 1790306163.4998786,
+    "Measurement done": 1790306193.5107882
+  },
+  "metrics": {
+    "cpu": {
+      "median": 1.6413870665417059,
+      "max": 112.64100093837972
+    },
+    "ram": {
+      "median": 85.646484375,
+      "max": 542.61328125
+    },
+    "network": {
+      "rx": {
+        "bytes_per_sec": {
+          "median": 5994.0842477929,
+          "max": 28602.619651179284
+        },
+        "total_bytes": 351577,
+        "total_packets": 2347
+      },
+      "tx": {
+        "bytes_per_sec": {
+          "median": 10541.279203238908,
+          "max": 29705.09586830664
+        },
+        "total_bytes": 538685,
+        "total_packets": 1960
+      },
+      "total_errors": 0
+    },
+    "expvar": {
+      "idle_memory_mb": {
+        "median": 6.55859375,
+        "max": 19.2890625
+      },
+      "total_memory_mb": {
+        "median": 65.0101547241211,
+        "max": 546.0960922241211
+      },
+      "gc_count": 17,
+      "num_goroutines_max": 229,
+      "num_threads_max": 30
+    },
+    "latency": {
+      "fleet": "status-go.test",
+      "fleets_config": "/usr/status-user/config/wakufleetconfig.json",
+      "sender_light": true,
+      "receiver_light": false,
+      "debounce_interval_ms": 1000,
+      "idle_after_receive_s": 1.0,
+      "receive_timeout_s": 20,
+      "send_to_receive_p50_ms": 1397.417051717639,
+      "send_to_receive_max_ms": 1464.8294979706407,
+      "send_to_delivered_p50_ms": 3798.5482616350055,
+      "first_message_ms": 1922.726378776133,
+      "first_message_delivered_ms": 4389.916385523975,
+      "first_message_timed_out": false,
+      "samples": 11,
+      "delivered_samples": 11,
+      "messages_sent": 12,
+      "messages_received": 12,
+      "receive_timeouts": 0,
+      "aborted_after": null,
+      "samples_ms": [
+        1464.8294979706407,
+        1398.1272401288152,
+        1397.292728535831,
+        1404.7180004417896,
+        1392.950921319425,
+        1397.417051717639,
+        1396.5698769316077,
+        1398.4145056456327,
+        1393.5073306784034,
+        1396.1331211030483,
+        1397.566819563508
+      ],
+      "delivered_ms": [
+        3866.392337717116,
+        3799.1506597027183,
+        3800.602562725544,
+        3800.339321605861,
+        3794.4570649415255,
+        3798.335754312575,
+        3798.3685564249754,
+        3798.5482616350055,
+        3793.487912043929,
+        3799.4434349238873,
+        2602.7332302182913
+      ]
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "timestamp": 1791343103.9605598,
+  "version": "unknown",
+  "events": {
+    "CreateAccountAndLogin": 1791343064.9013402,
+    "Logged in": 1791343066.503879,
+    "Contacts made": 1791343074.2271507,
+    "Measurement done": 1791343103.6699893
+  },
+  "metrics": {
+    "cpu": {
+      "median": 2.340014257734586,
+      "max": 104.4283015326869
+    },
+    "ram": {
+      "median": 89.41015625,
+      "max": 156.40625
+    },
+    "network": {
+      "rx": {
+        "bytes_per_sec": {
+          "median": 7723.460810095471,
+          "max": 31495.379420384437
+        },
+        "total_bytes": 352673,
+        "total_packets": 2035
+      },
+      "tx": {
+        "bytes_per_sec": {
+          "median": 12322.078069462626,
+          "max": 37363.29982763078
+        },
+        "total_bytes": 604888,
+        "total_packets": 1795
+      },
+      "total_errors": 0
+    },
+    "expvar": {
+      "idle_memory_mb": {
+        "median": 7.5078125,
+        "max": 124.0625
+      },
+      "total_memory_mb": {
+        "median": 67.05693817138672,
+        "max": 171.04131317138672
+      },
+      "gc_count": 14,
+      "num_goroutines_max": 287,
+      "num_threads_max": 32
+    },
+    "latency": {
+      "fleet": "status-go.test",
+      "fleets_config": "/usr/status-user/config/wakufleetconfig.json",
+      "sender_light": false,
+      "receiver_light": false,
+      "debounce_interval_ms": 1000,
+      "idle_after_receive_s": 1.0,
+      "receive_timeout_s": 20,
+      "send_to_receive_p50_ms": 1395.9685442969203,
+      "send_to_receive_max_ms": 1405.6337382644415,
+      "send_to_delivered_p50_ms": 3795.189468190074,
+      "first_message_ms": 1429.5840170234442,
+      "first_message_delivered_ms": 3828.5413589328527,
+      "first_message_timed_out": false,
+      "samples": 11,
+      "delivered_samples": 11,
+      "messages_sent": 12,
+      "messages_received": 12,
+      "receive_timeouts": 0,
+      "aborted_after": null,
+      "samples_ms": [
+        1394.5243526250124,
+        1395.9685442969203,
+        1405.6337382644415,
+        1384.160302579403,
+        1394.96857393533,
+        1397.5797165185213,
+        1396.0337154567242,
+        1399.1935551166534,
+        1393.9834516495466,
+        1395.8036247640848,
+        1396.4934945106506
+      ],
+      "delivered_ms": [
+        3795.1332926750183,
+        3795.4384945333004,
+        3793.836717493832,
+        3783.3236381411552,
+        3795.189468190074,
+        3797.7205207571387,
+        3798.3571412041783,
+        3802.5680957362056,
+        3792.927366681397,
+        3795.9213852882385,
+        2622.959913685918
+      ]
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "timestamp": 1792811022.8686848,
+  "version": "unknown",
+  "events": {
+    "Sleep for 5 seconds": 1792810864.5861075,
+    "CreateAccountAndLogin": 1792810869.593404,
+    "Logged in": 1792810871.1717517,
+    "Send 200 messages to AUT": 1792810878.0561903,
+    "Sleep for 30 seconds": 1792810912.6859708,
+    "Send 200 messages from AUT": 1792810910.3337672,
+    "Sleep for 60 seconds": 1792810942.6865034,
+    "FreeOSMemory": 1792811002.7089322
+  },
+  "metrics": {
+    "cpu": {
+      "median": 1.7118000000000002,
+      "max": 124.14480980823642
+    },
+    "ram": {
+      "median": 108.8046875,
+      "max": 135.63671875
+    },
+    "network": {
+      "rx": {
+        "bytes_per_sec": {
+          "median": 14269.594878389691,
+          "max": 426173.87720973487
+        },
+        "total_bytes": 4079621,
+        "total_packets": 9661
+      },
+      "tx": {
+        "bytes_per_sec": {
+          "median": 18601.52487560698,
+          "max": 1382385.9672237176
+        },
+        "total_bytes": 6080486,
+        "total_packets": 8200
+      },
+      "total_errors": 0
+    },
+    "expvar": {
+      "idle_memory_mb": {
+        "median": 8.00390625,
+        "max": 116.4453125
+      },
+      "total_memory_mb": {
+        "median": 71.96707916259766,
+        "max": 150.09989166259766
+      },
+      "gc_count": 51,
+      "num_goroutines_max": 636,
+      "num_threads_max": 40
+    }
+  }
+}

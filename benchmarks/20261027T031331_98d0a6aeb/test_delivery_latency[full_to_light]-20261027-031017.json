@@ -1,0 +1,99 @@
+{
+  "timestamp": 1793070618.3999102,
+  "version": "unknown",
+  "events": {
+    "CreateAccountAndLogin": 1793070579.3345885,
+    "Logged in": 1793070580.8923745,
+    "Contacts made": 1793070587.7851233,
+    "Measurement done": 1793070617.7573
+  },
+  "metrics": {
+    "cpu": {
+      "median": 2.5604096183922422,
+      "max": 104.57316266000625
+    },
+    "ram": {
+      "median": 79.794921875,
+      "max": 135.2109375
+    },
+    "network": {
+      "rx": {
+        "bytes_per_sec": {
+          "median": 7492.887800727114,
+          "max": 36429.485086408065
+        },
+        "total_bytes": 347583,
+        "total_packets": 1725
+      },
+      "tx": {
+        "bytes_per_sec": {
+          "median": 13124.871305947594,
+          "max": 34881.75869647488
+        },
+        "total_bytes": 613084,
+        "total_packets": 1610
+      },
+      "total_errors": 0
+    },
+    "expvar": {
+      "idle_memory_mb": {
+        "median": 6.5390625,
+        "max": 115.8359375
+      },
+      "total_memory_mb": {
+        "median": 61.93193817138672,
+        "max": 150.02568817138672
+      },
+      "gc_count": 15,
+      "num_goroutines_max": 288,
+      "num_threads_max": 28
+    },
+    "latency": {
+      "fleet": "status-go.test",
+      "fleets_config": "/usr/status-user/config/wakufleetconfig.json",
+      "sender_light": false,
+      "receiver_light": true,
+      "debounce_interval_ms": 1000,
+      "idle_after_receive_s": 1.0,
+      "receive_timeout_s": 20,
+      "send_to_receive_p50_ms": 1397.341189906001,
+      "send_to_receive_max_ms": 1430.8400014415383,
+      "send_to_delivered_p50_ms": 3797.2294464707375,
+      "first_message_ms": 1911.7060247808695,
+      "first_message_delivered_ms": 4349.1939110681415,
+      "first_message_timed_out": false,
+      "samples": 11,
+      "delivered_samples": 11,
+      "messages_sent": 12,
+      "messages_received": 12,
+      "receive_timeouts": 0,
+      "aborted_after": null,
+      "samples_ms": [
+        1430.8400014415383,
+        1400.3902301192284,
+        1401.4655211940408,
+        1393.31263769418,
+        1394.456036388874,
+        1394.1120030358434,
+        1398.6701844260097,
+        1398.1563849374652,
+        1395.7338649779558,
+        1397.341189906001,
+        1396.1346428841352
+      ],
+      "delivered_ms": [
+        3832.321736961603,
+        3800.2103064209223,
+        3798.2195764780045,
+        3794.4341897964478,
+        3794.0995637327433,
+        3796.440130099654,
+        3799.205298535526,
+        3797.2294464707375,
+        3796.033140271902,
+        3798.333790153265,
+        2634.0271225199103
+      ]
+    }
+  }
+}

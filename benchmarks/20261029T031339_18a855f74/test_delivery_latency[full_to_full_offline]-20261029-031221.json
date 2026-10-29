@@ -1,0 +1,102 @@
+{
+  "timestamp": 1793243541.869658,
+  "version": "unknown",
+  "events": {
+    "CreateAccountAndLogin": 1793243470.7400079,
+    "Logged in": 1793243472.304378,
+    "Contacts made": 1793243479.2086618,
+    "Receiver unpaused": 1793243520.387161,
+    "Measurement done": 1793243541.4405177
+  },
+  "metrics": {
+    "cpu": {
+      "median": 1.9902060100600585,
+      "max": 104.95359399436973
+    },
+    "ram": {
+      "median": 89.53515625,
+      "max": 134.33984375
+    },
+    "network": {
+      "rx": {
+        "bytes_per_sec": {
+          "median": 6175.734829325451,
+          "max": 56469.70307778891
+        },
+        "total_bytes": 626973,
+        "total_packets": 2307
+      },
+      "tx": {
+        "bytes_per_sec": {
+          "median": 11131.152073817306,
+          "max": 43529.26857979701
+        },
+        "total_bytes": 871540,
+        "total_packets": 2023
+      },
+      "total_errors": 0
+    },
+    "expvar": {
+      "idle_memory_mb": {
+        "median": 8.5,
+        "max": 114.0546875
+      },
+      "total_memory_mb": {
+        "median": 61.443641662597656,
+        "max": 148.15457916259766
+      },
+      "gc_count": 15,
+      "num_goroutines_max": 289,
+      "num_threads_max": 29
+    },
+    "latency": {
+      "fleet": "status-go.test",
+      "fleets_config": "/usr/status-user/config/wakufleetconfig.json",
+      "sender_light": false,
+      "receiver_light": false,
+      "debounce_interval_ms": 1000,
+      "idle_after_receive_s": 1.0,
+      "receive_timeout_s": 20,
+      "samples": 0,
+      "delivered_samples": 12,
+      "messages_sent": 12,
+      "messages_received": 12,
+      "receive_timeouts": 0,
+      "aborted_after": null,
+      "pause_seconds": 41.17700132634491,
+      "unpause_to_first_batch_ms": 1045.4874783754349,
+      "unpause_to_last_ms": 19811.788701452315,
+      "unpause_to_delivered_p50_ms": 15456.129677593708,
+      "messages_in_first_batch": 1,
+      "batches": 8,
+      "samples_ms": [
+        1045.4874783754349,
+        14378.018162213266,
+        10756.19959179312,
+        19811.788701452315,
+        5037.480289116502,
+        19811.788701452315,
+        2327.9748875647783,
+        19811.788701452315,
+        12260.5235343799,
+        14378.018162213266,
+        19811.788701452315,
+        16783.014186657965
+      ],
+      "delivered_ms": [
+        2319.497687742114,
+        15456.370567902923,
+        12255.394673906267,
+        20875.089794397354,
+        6126.765264198184,
+        20876.10402982682,
+        3415.029212832451,
+        20874.582055024803,
+        14367.326833307743,
+        15455.888787284493,
+        20875.607230700552,
+        19798.381803557277
+      ]
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "timestamp": 1793848180.8015776,
+  "version": "unknown",
+  "events": {
+    "CreateAccountAndLogin": 1793848141.7322333,
+    "Logged in": 1793848143.3112893,
+    "Contacts made": 1793848150.2283897,
+    "Measurement done": 1793848180.1783035
+  },
+  "metrics": {
+    "cpu": {
+      "median": 1.5855994960925197,
+      "max": 103.9975969962453
+    },
+    "ram": {
+      "median": 66.2578125,
+      "max": 124.31640625
+    },
+    "network": {
+      "rx": {
+        "bytes_per_sec": {
+          "median": 6539.392661957909,
+          "max": 31339.250252969272
+        },
+        "total_bytes": 323556,
+        "total_packets": 1579
+      },
+      "tx": {
+        "bytes_per_sec": {
+          "median": 10340.18319859497,
+          "max": 41945.99729766949
+        },
+        "total_bytes": 509611,
+        "total_packets": 1436
+      },
+      "total_errors": 0
+    },
+    "expvar": {
+      "idle_memory_mb": {
+        "median": 3.625,
+        "max": 107.9140625
+      },
+      "total_memory_mb": {
+        "median": 39.568641662597656,
+        "max": 138.87332916259766
+      },
+      "gc_count": 18,
+      "num_goroutines_max": 230,
+      "num_threads_max": 30
+    },
+    "latency": {
+      "fleet": "status-go.test",
+      "fleets_config": "/usr/status-user/config/wakufleetconfig.json",
+      "sender_light": true,
+      "receiver_light": false,
+      "debounce_interval_ms": 1000,
+      "idle_after_receive_s": 1.0,
+      "receive_timeout_s": 20,
+      "send_to_receive_p50_ms": 1397.4007973447442,
+      "send_to_receive_max_ms": 1419.7494219988585,
+      "send_to_delivered_p50_ms": 3797.955901362002,
+      "first_message_ms": 1902.5371065363288,
+      "first_message_delivered_ms": 4328.100660815835,
+      "first_message_timed_out": false,
+      "samples": 11,
+      "delivered_samples": 11,
+      "messages_sent": 12,
+      "messages_received": 12,
+      "receive_timeouts": 0,
+      "aborted_after": null,
+      "samples_ms": [
+        1419.7494219988585,
+        1399.9102786183357,
+        1402.3585952818394,
+        1391.8066956102848,
+        1399.219285696745,
+        1394.9987348169088,
+        1397.4007973447442,
+        1398.6237328499556,
+        1397.2467286512256,
+        1396.0247114300728,
+        1396.34517300874
+      ],
+      "delivered_ms": [
+        3820.9227630868554,
+        3800.4704834893346,
+        3797.955901362002,
+        3793.603233061731,
+        3799.4230752810836,
+        3797.371187247336,
+        3799.4335452094674,
+        3798.5003916546702,
+        3796.5982919558883,
+        3795.687859877944,
+        2647.1798019483685
+      ]
+    }
+  }
+}
